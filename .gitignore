@@ -2,5 +2,7 @@
 encore.gen.go
 encore.gen.cue
 /encore.gen
-
+.idea
+.idea/
+.DS_Store
 
