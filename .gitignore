@@ -52,3 +52,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# my script
+
+**/combine_sources.sh
+**/combined_sources.txt

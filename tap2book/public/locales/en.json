@@ -2,5 +2,20 @@
   "i18n": {
     "header": "Application supports i18n",
     "footer": "You can select a different language from the dropdown menu."
+  },
+  "onboarding": {
+    "slide1": {
+      "title": "Welcome to Our App",
+      "description": "Discover amazing features and possibilities that await you"
+    },
+    "slide2": {
+      "title": "Easy to Use",
+      "description": "Intuitive interface designed for the best user experience"
+    },
+    "slide3": {
+      "title": "Get Started",
+      "description": "Join us now and explore all the features"
+    },
+    "getStarted": "Get Started"
   }
 }

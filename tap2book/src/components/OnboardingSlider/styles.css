@@ -1,0 +1,44 @@
+.onboarding-slider {
+    background: var(--tg-theme-bg-color);
+}
+
+.onboarding-slide {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.onboarding-slide__content {
+    max-width: 80%;
+}
+
+.onboarding-slide__title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--tg-theme-text-color);
+}
+
+.onboarding-slide__text {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--tg-theme-hint-color);
+    margin-bottom: 1.5rem;
+}
+
+.onboarding-slide__button {
+    margin-top: 1rem;
+}
+
+/* Custom Swiper Pagination Styles */
+:root {
+    --swiper-pagination-color: var(--tg-theme-button-color);
+    --swiper-pagination-bullet-inactive-color: var(--tg-theme-hint-color);
+    --swiper-pagination-bullet-inactive-opacity: 0.5;
+    --swiper-pagination-bullet-size: 8px;
+    --swiper-pagination-bullet-horizontal-gap: 4px;
+}
