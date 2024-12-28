@@ -24,5 +24,6 @@ func AuthHandler(ctx context.Context, p *AuthParams) (auth.UID, *Data, error) {
 	if p.Authorization != "" {
 		return "test", &Data{}, nil
 	}
+
 	return "", nil, errs.B().Code(errs.Unauthenticated).Msg("no auth header").Err()
 }
