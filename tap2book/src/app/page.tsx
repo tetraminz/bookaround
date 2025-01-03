@@ -15,7 +15,7 @@ export default function Home() {
 
   return (
       <Page back={false}>
-        <OnboardingSlider />
+      <OnboardingSlider />
         <List>
           <Section
               header="Features"
