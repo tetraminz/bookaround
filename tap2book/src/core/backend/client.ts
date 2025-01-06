@@ -66,10 +66,14 @@ export interface ClientOptions {
      * request either by passing in a static object or by passing in
      * a function which returns a new object for each request.
      */
-    auth?: user.AuthParams | AuthDataGenerator
+    auth?: booking.AuthParams | AuthDataGenerator
 }
 
 export namespace booking {
+    export interface AuthParams {
+        Authorization: string
+    }
+
     export interface Availability {
         start?: string
         end?: string
@@ -148,6 +152,10 @@ export namespace booking {
         public async SetAvailability(params: SetAvailabilityParams): Promise<void> {
             await this.baseClient.callAPI("POST", `/availability`, JSON.stringify(params))
         }
+
+        public async UserUpsert(): Promise<void> {
+            await this.baseClient.callAPI("POST", `/tma/signup`)
+        }
     }
 }
 
@@ -169,12 +177,6 @@ export namespace frontend {
         public async Serve(method: string, path: string[], body?: BodyInit, options?: CallParameters): Promise<Response> {
             return this.baseClient.callAPI(method, `/frontend/${path.map(encodeURIComponent).join("/")}`, body, options)
         }
-    }
-}
-
-export namespace user {
-    export interface AuthParams {
-        Authorization: string
     }
 }
 
@@ -384,8 +386,8 @@ type CallParameters = Omit<RequestInit, "method" | "body" | "headers"> & {
 
 // AuthDataGenerator is a function that returns a new instance of the authentication data required by this API
 export type AuthDataGenerator = () =>
-  | user.AuthParams
-  | Promise<user.AuthParams | undefined>
+  | booking.AuthParams
+  | Promise<booking.AuthParams | undefined>
   | undefined;
 
 // A fetcher is the prototype for the inbuilt Fetch function
@@ -433,7 +435,7 @@ class BaseClient {
     }
 
     async getAuthData(): Promise<CallParameters | undefined> {
-        let authData: user.AuthParams | undefined;
+        let authData: booking.AuthParams | undefined;
 
         // If authorization data generator is present, call it and add the returned data to the request
         if (this.authGenerator) {

@@ -6,6 +6,7 @@ require (
 	encore.dev v1.44.6
 	github.com/jackc/pgx/v5 v5.2.0
 	github.com/sendgrid/sendgrid-go v3.14.0+incompatible
+	github.com/telegram-mini-apps/init-data-golang v1.3.0
 )
 
 require (
