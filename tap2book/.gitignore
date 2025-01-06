@@ -53,8 +53,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
-# my script
-
-**/combine_sources.sh
-**/combined_sources.txt
+certificates
+*storybook.log
