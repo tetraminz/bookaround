@@ -1,6 +1,6 @@
 'use client';
 
-import { Swiper, SwiperSlide } from 'swiper/react';
+import {Swiper, SwiperRef, SwiperSlide} from 'swiper/react';
 import { Pagination, A11y } from 'swiper/modules';
 import { useTranslations } from 'next-intl';
 import { Button } from '@telegram-apps/telegram-ui';
@@ -14,7 +14,7 @@ export function OnboardingSlider() {
     const t = useTranslations('onboarding');
     const { isOpen, closeOnboarding } = useOnboarding();
     const [activeIndex, setActiveIndex] = useState(0);
-    const swiperRef = useRef(null); // Реф для Swiper
+    const swiperRef = useRef<SwiperRef | null>(null);
 
     return (
         <div className={`fixed inset-0 bg-[var(--tg-theme-bg-color)] z-50 ${isOpen ? 'flex' : 'hidden'} flex-col justify-between`}>
