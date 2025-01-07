@@ -7,6 +7,7 @@ import {
   $debug,
   init as initSDK,
 } from '@telegram-apps/sdk-react';
+import eruda from 'eruda';
 
 /**
  * Initializes the application and configures its dependencies.
@@ -14,6 +15,13 @@ import {
 export function init(debug: boolean): void {
   // Set @telegram-apps/sdk-react debug mode.
   $debug.set(debug);
+
+// Initialize Eruda in debug mode
+  if (debug) {
+    eruda.init();
+  }
+
+  console.log('eruda');
 
   // Initialize special event handlers for Telegram Desktop, Android, iOS, etc.
   // Also, configure the package.
@@ -24,6 +32,7 @@ export function init(debug: boolean): void {
   miniApp.mount();
   themeParams.mount();
   initData.restore();
+
   void viewport.mount().then(() => {
     viewport.bindCssVars();
   }).catch(e => {
@@ -33,9 +42,4 @@ export function init(debug: boolean): void {
   // Define components-related CSS variables.
   miniApp.bindCssVars();
   themeParams.bindCssVars();
-
-  // Add Eruda if needed.
-  debug && import('eruda')
-    .then((lib) => lib.default.init())
-    .catch(console.error);
 }

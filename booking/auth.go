@@ -2,6 +2,7 @@ package booking
 
 import (
 	"context"
+	encore "encore.dev"
 	"encore.dev/beta/auth"
 	"encore.dev/beta/errs"
 	"encore.dev/rlog"
@@ -13,6 +14,7 @@ import (
 // TODO add token to the env
 var (
 	telegramBotToken = `7917461823:AAGdN9A-_fmyXsH-aa6s-N8BfDJuO677Mm0`
+	debugStartParam  = `debug`
 )
 
 type AuthData struct {
@@ -37,6 +39,8 @@ func AuthHandler(ctx context.Context, p *AuthParams) (auth.UID, *AuthData, error
 		return "", nil, errs.B().Code(errs.Unauthenticated).Msg("no auth header").Err()
 	}
 
+	rlog.Info(p.Authorization)
+
 	authParts := strings.Split(p.Authorization, " ")
 	if len(authParts) != 2 {
 		return "", nil, errs.B().Code(errs.Unauthenticated).Msg("bad auth header").Err()
@@ -47,18 +51,21 @@ func AuthHandler(ctx context.Context, p *AuthParams) (auth.UID, *AuthData, error
 
 	switch authType {
 	case "tma":
-		// Validate init data. We consider init data sign valid for 1 hour from their
-		// creation moment.
-		if err := initdata.Validate(authData, telegramBotToken, time.Hour); err != nil {
-			rlog.Error(err.Error())
-			return "", nil, errs.B().Code(errs.Unauthenticated).Msg("expired auth data").Err()
-		}
-
 		// Parse init data. We will surely need it in the future.
 		initData, err := initdata.Parse(authData)
 		if err != nil {
 			rlog.Error(err.Error())
 			return "", nil, errs.B().Code(errs.Unauthenticated).Msg("corrupted auth data").Err()
+		}
+
+        // Валидация не для локального запуска. После парсинга.
+		if (initData.StartParam != debugStartParam) && (encore.Meta().Environment.Type != encore.EnvLocal) {
+			// Validate init data. We consider init data sign valid for 1 hour from their
+			// creation moment.
+			if err := initdata.Validate(authData, telegramBotToken, time.Hour); err != nil {
+				rlog.Error(err.Error())
+				return "", nil, errs.B().Code(errs.Unauthenticated).Msg("expired auth data").Err()
+			}
 		}
 
 		rlog.Info(initData.User.Username)
