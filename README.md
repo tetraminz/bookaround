@@ -1,4 +1,4 @@
-# Booking System Example
+enc# Booking System Example
 
 The example in this starter is an Appointment Booking System with both a user facing part (finding and booking appointments) and a admin part (setting availability and managing scheduled appointments). 
 

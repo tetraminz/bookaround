@@ -17,8 +17,7 @@ import { useDidMount } from '@/hooks/useDidMount';
 import { useClientOnce } from '@/hooks/useClientOnce';
 import { setLocale } from '@/core/i18n/locale';
 import { init } from '@/core/init';
-
-import './styles.css';
+import {createClient} from "@/core/backend";
 
 function RootInner({ children }: PropsWithChildren) {
   const isDev = process.env.NODE_ENV === 'development';
@@ -36,6 +35,24 @@ function RootInner({ children }: PropsWithChildren) {
   useClientOnce(() => {
     init(debug);
   });
+
+  // Call UserUpsert when component mounts on client side and we have valid launch params
+  useEffect(() => {
+    if (lp.initDataRaw) {
+      let client;
+
+      client = createClient(lp.initDataRaw)
+
+      client.booking.UserUpsert()
+          .then(() => {
+            console.log('UserUpsert successful');
+          })
+          .catch(error => {
+            // More detailed error logging
+            console.error('UserUpsert failed:', error)
+          });
+    }
+  }, [lp.initDataRaw]);
 
   const isDark = useSignal(miniApp.isDark);
   const initDataUser = useSignal(initData.user);
