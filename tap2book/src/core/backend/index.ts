@@ -1,10 +1,24 @@
+'use client';
+
 import Client, { Environment, Local } from './client';
+import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 
-// Initialize the client with the appropriate base URL
-const client = new Client(
-    (process.env.NODE_ENV === ('staging' as string))
-        ? Environment('staging') // Use production environment in prod
-        : Local // Use local environment in development
-);
-
-export { client };
+export function createClient() {
+    return new Client(
+        (process.env.NODE_ENV === ('staging' as string))
+            ? Environment('staging')
+            : Local,
+        {
+            auth: () => {
+                try {
+                    const { launchParams } = retrieveLaunchParams();
+                    console.log(launchParams.initDataRaw);
+                    return { Authorization: `tma ${launchParams.initDataRaw}` };
+                } catch (error) {
+                    console.error('Failed to retrieve TMA launch params:', error);
+                    return undefined;
+                }
+            }
+        }
+    );
+}

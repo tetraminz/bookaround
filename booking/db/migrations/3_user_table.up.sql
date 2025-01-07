@@ -8,5 +8,7 @@ CREATE TABLE users (
                       language_code VARCHAR DEFAULT '',
                       is_bot BOOLEAN DEFAULT false,
                       allows_write_to_pm BOOLEAN DEFAULT false,
-                      added_to_attachment_menu BOOLEAN DEFAULT false
+                      added_to_attachment_menu BOOLEAN DEFAULT false,
+                      created_at     timestamp with time zone default CURRENT_TIMESTAMP,
+                      updated_at     timestamp with time zone default CURRENT_TIMESTAMP
 );

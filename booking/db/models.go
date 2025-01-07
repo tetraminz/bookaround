@@ -33,4 +33,6 @@ type User struct {
 	IsBot                 pgtype.Bool
 	AllowsWriteToPm       pgtype.Bool
 	AddedToAttachmentMenu pgtype.Bool
+	CreatedAt             pgtype.Timestamptz
+	UpdatedAt             pgtype.Timestamptz
 }
