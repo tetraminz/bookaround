@@ -17,11 +17,9 @@ export function init(debug: boolean): void {
   $debug.set(debug);
 
 // Initialize Eruda in debug mode
-  if (debug) {
+//   if (debug) {
     eruda.init();
-  }
-
-  console.log('eruda');
+  // }
 
   // Initialize special event handlers for Telegram Desktop, Android, iOS, etc.
   // Also, configure the package.
