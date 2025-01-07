@@ -4,7 +4,7 @@ import Client, { Environment, Local } from './client';
 
 export function createClient(initDataRaw: string) {
     return new Client(
-        (process.env.NODE_ENV === ('staging' as string))
+        (process.env.NODE_ENV === ('production' as string))
             ? Environment('staging')
             : Local,
         {
