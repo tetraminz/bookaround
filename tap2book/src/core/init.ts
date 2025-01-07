@@ -18,7 +18,9 @@ export function init(debug: boolean): void {
 
 // Initialize Eruda in debug mode
 //   if (debug) {
-    eruda.init();
+  eruda.init();
+  console.log('env var {', process.env.NODE_ENV, '}');
+
   // }
 
   // Initialize special event handlers for Telegram Desktop, Android, iOS, etc.
