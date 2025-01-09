@@ -9,9 +9,7 @@ import {BookingWizard} from "@/components/BookingWizard/BookingWizard";
 export default function BookingWizardPage() {
     return (
         <Page>
-            <div className="flex min-h-screen flex-col items-center justify-between p-24">
                 <BookingWizard/>
-            </div>
         </Page>
     );
 }
