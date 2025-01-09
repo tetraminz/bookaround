@@ -13,8 +13,7 @@ import (
 
 // TODO add token to the env
 var (
-	telegramBotToken = `7917461823:AAGdN9A-_fmyXsH-aa6s-N8BfDJuO677Mm0`
-	debugStartParam  = `debug`
+	debugStartParam = `debug`
 )
 
 type AuthData struct {
@@ -58,11 +57,11 @@ func AuthHandler(ctx context.Context, p *AuthParams) (auth.UID, *AuthData, error
 			return "", nil, errs.B().Code(errs.Unauthenticated).Msg("corrupted auth data").Err()
 		}
 
-        // Валидация не для локального запуска. После парсинга.
+		// Валидация не для локального запуска. После парсинга. TODO путаница с Type, Name
 		if (initData.StartParam != debugStartParam) && (encore.Meta().Environment.Type != encore.EnvLocal) {
 			// Validate init data. We consider init data sign valid for 1 hour from their
 			// creation moment.
-			if err := initdata.Validate(authData, telegramBotToken, time.Hour); err != nil {
+			if err := initdata.Validate(authData, secrets.TELEGRAM_BOT_TOKEN, time.Hour); err != nil {
 				rlog.Error(err.Error())
 				return "", nil, errs.B().Code(errs.Unauthenticated).Msg("expired auth data").Err()
 			}
