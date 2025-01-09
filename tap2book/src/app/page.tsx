@@ -54,11 +54,6 @@ export default function Home() {
                 Theme Parameters
               </Cell>
             </Link>
-              <Link href="/calendar">
-                <Cell subtitle="Demo booking system">
-                  Calendar
-                </Cell>
-              </Link>
             <Link href="/booking-wizard">
               <Cell subtitle="Booking wizard system">
                 Calendar
