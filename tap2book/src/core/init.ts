@@ -7,7 +7,6 @@ import {
   $debug,
   init as initSDK,
 } from '@telegram-apps/sdk-react';
-import eruda from 'eruda';
 
 /**
  * Initializes the application and configures its dependencies.
@@ -15,13 +14,6 @@ import eruda from 'eruda';
 export function init(debug: boolean): void {
   // Set @telegram-apps/sdk-react debug mode.
   $debug.set(debug);
-
-// Initialize Eruda in debug mode
-//   if (debug) {
-  eruda.init();
-  console.log('env var {', process.env.NODE_ENV, '}');
-
-  // }
 
   // Initialize special event handlers for Telegram Desktop, Android, iOS, etc.
   // Also, configure the package.

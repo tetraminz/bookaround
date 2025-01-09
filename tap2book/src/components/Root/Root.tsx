@@ -20,6 +20,10 @@ import { init } from '@/core/init';
 import {createClient} from "@/core/backend";
 
 function RootInner({ children }: PropsWithChildren) {
+  useEffect(() => {
+    import("eruda").then((eruda) => eruda.default.init());
+  }, []);
+
   const isDev = process.env.NODE_ENV === 'development';
 
   // Mock Telegram environment in development mode if needed.
@@ -46,11 +50,22 @@ function RootInner({ children }: PropsWithChildren) {
       client.booking.UserUpsert()
           .then(() => {
             console.log('UserUpsert successful');
-          })
-          .catch(error => {
-            // More detailed error logging
-            console.error('UserUpsert failed:', error)
-          });
+          }).catch(error => {
+        // More detailed error logging
+
+        console.error('UserUpsert failed:', {
+          name: error.name,
+          message: error.message,
+          code: error.code,
+          status: error.status,
+          response: error.response,
+          // For network errors
+          type: error instanceof TypeError ? 'Network Error' : 'Other Error',
+          // Full error object for debugging
+          fullError: error,
+          stack: error.stack
+        });
+      });
     }
   }, [lp.initDataRaw]);
 
