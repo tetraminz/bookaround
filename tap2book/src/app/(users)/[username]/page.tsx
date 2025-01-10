@@ -35,7 +35,7 @@ export default function UserProfilePage() {
         <Page>
             <div className="flex flex-col items-center p-6 bg-[var(--tg-theme-secondary-bg-color)]">
                 <Avatar
-                    size={80}
+                    size={96}
                     src={user.photoUrl}
                     className="mb-4"
                 />
