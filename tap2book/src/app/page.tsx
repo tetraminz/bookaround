@@ -9,14 +9,37 @@ import { Page } from '@/components/Page';
 import { OnboardingSlider } from '@/components/OnboardingSlider/OnboardingSlider';
 
 import tonSvg from './_assets/ton.svg';
+import {initData, useLaunchParams, useSignal} from "@telegram-apps/sdk-react";
 
 export default function Home() {
   const t = useTranslations('i18n');
 
+  const user = useSignal(initData.user);
+
   return (
       <Page back={false}>
-      <OnboardingSlider />
+        <OnboardingSlider />
+
         <List>
+          {/* Добавляем новую секцию для профиля пользователя */}
+          {user?.username && (
+              <Section header="Мой профиль">
+                <Link href={`/${user.username}`}>
+                  <Cell
+                      before={
+                        <Image
+                            src={user.photoUrl}
+                            style={{ borderRadius: '50%' }}
+                        />
+                      }
+                      subtitle="Перейти в профиль"
+                  >
+                    {user.firstName} {user.lastName}
+                  </Cell>
+                </Link>
+              </Section>
+          )}
+
           <Section
               header="Features"
               footer="You can use these pages to learn more about features, provided by Telegram Mini Apps and other useful projects"
@@ -56,7 +79,7 @@ export default function Home() {
             </Link>
             <Link href="/booking-wizard">
               <Cell subtitle="Booking wizard system">
-                Calendar
+                Booking wizard system
               </Cell>
             </Link>
           </Section>
