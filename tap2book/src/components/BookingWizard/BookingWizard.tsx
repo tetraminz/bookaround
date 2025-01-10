@@ -6,7 +6,7 @@ import { ru } from "date-fns/locale"
 import { DatePicker } from "../DatePicker/DatePicker"
 import { TimePicker } from "../TimePicker/TimePicker"
 import { Confirmation } from "../Confirmation/Confirmation"
-import { Button } from "@/components/ui/button"
+import { Button } from '@telegram-apps/telegram-ui';
 import { themeParams, useSignal } from "@telegram-apps/sdk-react"
 
 type Step = "date" | "time" | "confirmation"
