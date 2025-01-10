@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@telegram-apps/telegram-ui';
 
 interface ConfirmationProps {
     date: string
