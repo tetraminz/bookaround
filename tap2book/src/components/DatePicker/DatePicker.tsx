@@ -34,7 +34,7 @@ export function DatePicker({ onSelect }: DatePickerProps) {
             locale={ru}
             disabled={isDateUnavailable}
             className={cn(
-                "w-full max-w-[400px] h-auto p-4",
+                "w-full max-w-[400px] h-auto p-0.1",
                 "rounded-lg border",
                 "bg-[var(--tg-theme-bg-color)]",
                 "text-[var(--tg-theme-text-color)]"
@@ -67,7 +67,7 @@ export function DatePicker({ onSelect }: DatePickerProps) {
                     "hover:bg-[var(--tg-theme-secondary-bg-color)] rounded-md"
                 ),
                 day_selected: "bg-[var(--tg-theme-button-color)] text-[var(--tg-theme-button-text-color)] hover:bg-[var(--tg-theme-button-color)] hover:text-[var(--tg-theme-button-text-color)]",
-                day_today: "bg-[var(--tg-theme-hint-color)] text-[var(--tg-theme-text-color)]",
+                day_today: "bg-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]",
                 day_outside: "text-[var(--tg-theme-hint-color)] opacity-50",
                 day_disabled: "text-[var(--tg-theme-hint-color)] opacity-50",
                 day_range_middle: "aria-selected:bg-[var(--tg-theme-secondary-bg-color)] aria-selected:text-[var(--tg-theme-text-color)]",
