@@ -1,16 +1,12 @@
 "use client";
 
 import { useSignal, initData } from '@telegram-apps/sdk-react';
-import {Avatar, Button, Card, Cell, List, Section, Title} from '@telegram-apps/telegram-ui';
-import { useParams } from 'next/navigation';
 import { Page } from '@/components/Page';
 import { ShareProfile } from '@/components/ShareProfile/ShareProfile';
-import {Bell, MoreHorizontal, Phone, Search, Video} from "lucide-react";
-import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious} from "@/components/ui/carousel";
-import {BusinessCard} from "@/components/BusinessCard/BusinessCard";
+import { AppointmentCards } from "@/components/AppointmentCards/AppointmentCards";
+import UserProfile from "@/components/UserProfile/UserProfile";
 
 export default function UserProfilePage() {
-    const params = useParams();
     const user = useSignal(initData.user);
 
     // В будущем здесь будет запрос к API для получения данных о услугах пользователя
@@ -33,24 +29,23 @@ export default function UserProfilePage() {
 
     return (
         <Page>
-            <div className="flex flex-col items-center p-6 bg-[var(--tg-theme-secondary-bg-color)]">
-                <Avatar
-                    size={96}
-                    src={user.photoUrl}
-                    className="mb-4"
-                />
-                <Title level="1" className="text-[var(--tg-theme-text-color)] text2xl mb-1">
-                    {user.firstName} {user.lastName}
-                </Title>
-            </div>
+            <UserProfile
+                firstName={user.firstName}
+                lastName={user.lastName}
+                photoUrl={user.photoUrl}
+            />
 
             <div className="flex flex-col min-h-screen bg-[var(--tg-theme-bg-color)] text-center items-center">
-                <BusinessCard
+                <AppointmentCards
                     title={mockServiceData.title}
                     description={mockServiceData.description}
                     price={mockServiceData.price}
                     image={mockServiceData.image}
                 />
+            </div>
+
+            <div>
+                <ShareProfile username={user.username} />
             </div>
         </Page>
     );

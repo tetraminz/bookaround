@@ -24,7 +24,7 @@ export default function Home() {
           {/* Добавляем новую секцию для профиля пользователя */}
           {user?.username && (
               <Section header="Мой профиль">
-                <Link href={`/${user.username}`}>
+                <Link href={`/profile/${user.username}`}>
                   <Cell
                       before={
                         <Image

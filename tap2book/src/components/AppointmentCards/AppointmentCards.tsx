@@ -1,19 +1,17 @@
 "use client";
 
-import { useState } from 'react';
-import {Card, Button, Section} from '@telegram-apps/telegram-ui';
-import { Check, Copy } from 'lucide-react';
+import {Section} from '@telegram-apps/telegram-ui';
 import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious} from "@/components/ui/carousel";
-import ClassNames from 'embla-carousel-class-names'
 
-interface BusinessCardProps {
+// TODO Принимать массив для карточек
+interface AppointmentCardsProps {
     title: string;
     description: string;
     price: string;
     image: string;
 }
 
-export function BusinessCard({ image, price, description, title }: BusinessCardProps) {
+export function AppointmentCards({ image, price, description, title }: AppointmentCardsProps) {
 
     return (
         <Carousel
