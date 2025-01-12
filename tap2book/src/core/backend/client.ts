@@ -146,6 +146,14 @@ export namespace booking {
         "telegram_id": number
     }
 
+    export interface User {
+        "telegram_id": number
+        "first_name": string
+        "last_name": string
+        "photo_url": string
+        "language_code": string
+    }
+
     export class ServiceClient {
         private baseClient: BaseClient
 
@@ -187,6 +195,12 @@ export namespace booking {
             // Now make the actual call to the API
             const resp = await this.baseClient.callAPI("GET", `/slots/${encodeURIComponent(masterTelegramID)}/${encodeURIComponent(_from)}`)
             return await resp.json() as SlotsResponse
+        }
+
+        public async GetUserByUsename(userName: string): Promise<User> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callAPI("GET", `/tma/${encodeURIComponent(userName)}`)
+            return await resp.json() as User
         }
 
         public async ListAppointments(): Promise<ListAppointmentsResponse> {

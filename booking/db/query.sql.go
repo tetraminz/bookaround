@@ -111,6 +111,38 @@ func (q *Queries) GetAvailabilityByUser(ctx context.Context, telegramID int64) (
 	return items, nil
 }
 
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT
+    telegram_id,
+    first_name,
+    last_name,
+    photo_url,
+    language_code
+FROM users
+    WHERE username = $1
+`
+
+type GetUserByUsernameRow struct {
+	TelegramID   int64
+	FirstName    string
+	LastName     string
+	PhotoUrl     pgtype.Text
+	LanguageCode pgtype.Text
+}
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
+	var i GetUserByUsernameRow
+	err := row.Scan(
+		&i.TelegramID,
+		&i.FirstName,
+		&i.LastName,
+		&i.PhotoUrl,
+		&i.LanguageCode,
+	)
+	return i, err
+}
+
 const insertAppointment = `-- name: InsertAppointment :one
 
 INSERT INTO appointment (

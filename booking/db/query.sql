@@ -95,6 +95,16 @@ ON CONFLICT (telegram_id) DO UPDATE
         updated_at = now()
 RETURNING *;
 
+-- name: GetUserByUsername :one
+SELECT
+    telegram_id,
+    first_name,
+    last_name,
+    photo_url,
+    language_code
+FROM users
+    WHERE username = $1;
+
 
 -- APPOINTMENT
 
