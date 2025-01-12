@@ -16,14 +16,14 @@ type SlotsParams struct{}
 
 type SlotsResponse struct{ Slots []BookableSlot }
 
-//encore:api public method=GET path=/slots/:from
-func GetBookableSlots(ctx context.Context, from string) (*SlotsResponse, error) {
+//encore:api public method=GET path=/slots/:masterTelegramID/:from
+func GetBookableSlots(ctx context.Context, masterTelegramID int64, from string) (*SlotsResponse, error) {
 	fromDate, err := time.Parse("2006-01-02", from)
 	if err != nil {
 		return nil, err
 	}
 
-	availabilityResp, err := GetAvailability(ctx)
+	availabilityResp, err := GetAvailability(ctx, masterTelegramID)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func GetBookableSlots(ctx context.Context, from string) (*SlotsResponse, error) 
 	}
 
 	// Get bookings for the next 7 days.
-	activeBookings, err := listBookingsBetween(ctx, fromDate, fromDate.AddDate(0, 0, numDays))
+	activeBookings, err := listBookingsBetween(ctx, fromDate, fromDate.AddDate(0, 0, numDays), masterTelegramID)
 	if err != nil {
 		return nil, err
 	}

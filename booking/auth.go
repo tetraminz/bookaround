@@ -61,7 +61,7 @@ func AuthHandler(ctx context.Context, p *AuthParams) (auth.UID, *AuthData, error
 		if (initData.StartParam != debugStartParam) && (encore.Meta().Environment.Type != encore.EnvLocal) {
 			// Validate init data. We consider init data sign valid for 1 hour from their
 			// creation moment.
-			if err := initdata.Validate(authData, secrets.TELEGRAM_BOT_TOKEN, time.Hour); err != nil {
+			if err := initdata.Validate(authData, secrets.TELEGRAM_BOT_TOKEN, time.Hour*24); err != nil {
 				rlog.Error(err.Error())
 				return "", nil, errs.B().Code(errs.Unauthenticated).Msg("expired auth data").Err()
 			}

@@ -8,18 +8,36 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Appointment struct {
+	ID          int64
+	Title       string
+	Description string
+	ImageUrl    string
+	Price       string
+	TelegramID  int64
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
 type Availability struct {
-	Weekday   int16
-	StartTime pgtype.Time
-	EndTime   pgtype.Time
+	TelegramID int64
+	Weekday    int16
+	StartTime  pgtype.Time
+	EndTime    pgtype.Time
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
 }
 
 type Booking struct {
-	ID        int64
-	StartTime pgtype.Timestamp
-	EndTime   pgtype.Timestamp
-	Email     string
-	CreatedAt pgtype.Timestamp
+	ID                 int64
+	StartTime          pgtype.Timestamp
+	EndTime            pgtype.Timestamp
+	Email              string
+	CreatedAt          pgtype.Timestamp
+	UpdatedAt          pgtype.Timestamp
+	MasterTelegramID   int64
+	CustomerTelegramID int64
+	AppointmentID      int64
 }
 
 type User struct {

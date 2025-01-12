@@ -3,9 +3,8 @@ package booking
 
 import (
 	"context"
+	"encore.dev/beta/auth"
 	"time"
-
-	"encore.app/sendgrid"
 
 	"encore.app/booking/db"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -31,20 +30,30 @@ var (
 )
 
 type Booking struct {
-	ID    int64     `json:"id"`
-	Start time.Time `json:"start"`
-	End   time.Time `json:"end"`
-	Email string    `encore:"sensitive"`
+	ID                 int64     `json:"id"`
+	Start              time.Time `json:"start"`
+	End                time.Time `json:"end"`
+	Email              string    `encore:"sensitive"`
+	CustomerTelegramID int64     `encore:"sensitive"`
+	MasterTelegramID   int64     `encore:"sensitive"`
+	AppointmentID      int64     `encore:"sensitive"`
 }
 
 type BookParams struct {
-	Start time.Time `json:"start"`
-	Email string    `encore:"sensitive"`
+	Start         time.Time `json:"start"`
+	Email         string    `encore:"sensitive"`
+	AppointmentID int64     `encore:"sensitive"`
 }
 
-//encore:api public method=POST path=/booking
-func Book(ctx context.Context, p *BookParams) error {
+//encore:api auth method=POST path=/booking/:masterTelegramID
+func Book(ctx context.Context, masterTelegramID int64, p *BookParams) error {
 	eb := errs.B()
+
+	authData, ok := auth.Data().(*AuthData)
+	if !ok {
+		return eb.Code(errs.Unavailable).Msg("failed to fetch authData").Err()
+	}
+	customerTelegramID := authData.TelegramID
 
 	now := time.Now()
 	if p.Start.Before(now) {
@@ -59,7 +68,7 @@ func Book(ctx context.Context, p *BookParams) error {
 
 	// Get the bookings for this day.
 	startOfDay := time.Date(p.Start.Year(), p.Start.Month(), p.Start.Day(), 0, 0, 0, 0, p.Start.Location())
-	bookings, err := listBookingsBetween(ctx, startOfDay, startOfDay.AddDate(0, 0, 1))
+	bookings, err := listBookingsBetween(ctx, startOfDay, startOfDay.AddDate(0, 0, 1), masterTelegramID)
 	if err != nil {
 		return eb.Cause(err).Code(errs.Unavailable).Msg("failed to list bookings").Err()
 	}
@@ -71,9 +80,12 @@ func Book(ctx context.Context, p *BookParams) error {
 	}
 
 	_, err = query.InsertBooking(ctx, db.InsertBookingParams{
-		StartTime: pgtype.Timestamp{Time: p.Start, Valid: true},
-		EndTime:   pgtype.Timestamp{Time: p.Start.Add(DefaultBookingDuration), Valid: true},
-		Email:     p.Email,
+		StartTime:          pgtype.Timestamp{Time: p.Start, Valid: true},
+		EndTime:            pgtype.Timestamp{Time: p.Start.Add(DefaultBookingDuration), Valid: true},
+		Email:              p.Email,
+		MasterTelegramID:   masterTelegramID,
+		CustomerTelegramID: customerTelegramID,
+		AppointmentID:      p.AppointmentID,
 	})
 	if err != nil {
 		return eb.Cause(err).Code(errs.Unavailable).Msg("failed to insert booking").Err()
@@ -83,31 +95,39 @@ func Book(ctx context.Context, p *BookParams) error {
 		return eb.Cause(err).Code(errs.Unavailable).Msg("failed to commit transaction").Err()
 	}
 
-	formattedTime := pgtype.Timestamp{Time: p.Start, Valid: true}.Time.Format("2006-01-02 15:04")
-	_, err = sendgrid.Send(ctx, &sendgrid.SendParams{
-		From: sendgrid.Address{
-			Name:  "<your name>",
-			Email: "<your email>",
-		},
-		To: sendgrid.Address{
-			Email: p.Email,
-		},
-		Subject: "Booking Confirmation",
-		Text:    "Thank you for your booking!\nWe look forward to seeing you soon at " + formattedTime,
-		Html:    "",
-	})
-
-	if err != nil {
-		return err
-	}
+	// TODO интеграция с send grid
+	//formattedTime := pgtype.Timestamp{Time: p.Start, Valid: true}.Time.Format("2006-01-02 15:04")
+	//_, err = sendgrid.Send(ctx, &sendgrid.SendParams{
+	//	From: sendgrid.Address{
+	//		Name:  "<your name>",
+	//		Email: "<your email>",
+	//	},
+	//	To: sendgrid.Address{
+	//		Email: p.Email,
+	//	},
+	//	Subject: "Booking Confirmation",
+	//	Text:    "Thank you for your booking!\nWe look forward to seeing you soon at " + formattedTime,
+	//	Html:    "",
+	//})
+	//
+	//if err != nil {
+	//	return err
+	//}
 
 	return nil
 }
 
-func listBookingsBetween(ctx context.Context, start, end time.Time) ([]*Booking, error) {
-	rows, err := query.ListBookingsBetween(ctx, db.ListBookingsBetweenParams{
-		StartTime: pgtype.Timestamp{Time: start, Valid: true},
-		EndTime:   pgtype.Timestamp{Time: end, Valid: true},
+func listBookingsBetween(ctx context.Context, start, end time.Time, masterTelegramID int64) ([]*Booking, error) {
+	rows, err := query.ListBookingsBetweenForMaster(ctx, db.ListBookingsBetweenForMasterParams{
+		MasterTelegramID: masterTelegramID,
+		StartTime: pgtype.Timestamp{
+			Time:  start,
+			Valid: true,
+		},
+		EndTime: pgtype.Timestamp{
+			Time:  end,
+			Valid: true,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -141,10 +161,13 @@ func ListBookings(ctx context.Context) (*ListBookingsResponse, error) {
 	var bookings []*Booking
 	for _, row := range rows {
 		bookings = append(bookings, &Booking{
-			ID:    row.ID,
-			Start: row.StartTime.Time,
-			End:   row.EndTime.Time,
-			Email: row.Email,
+			ID:                 row.ID,
+			Start:              row.StartTime.Time,
+			End:                row.EndTime.Time,
+			Email:              row.Email,
+			CustomerTelegramID: row.CustomerTelegramID,
+			MasterTelegramID:   row.MasterTelegramID,
+			AppointmentID:      row.AppointmentID,
 		})
 	}
 	return &ListBookingsResponse{Booking: bookings}, nil
