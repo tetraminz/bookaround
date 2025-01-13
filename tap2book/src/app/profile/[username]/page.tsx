@@ -36,14 +36,10 @@ export default function UserProfilePage() {
         async function fetchUserData() {
             setIsLoading(true);
 
-            console.log("[API] Запрос данных для пользователя:", username);
-
             try {
                 const user = await getUserByUsername(username);
-                console.log("[API] Полученные данные пользователя:", user);
 
                 const appointments = await listAppointmentsByUser(username);
-                console.log("[API] Полученные аппойнтменты:", appointments);
 
                 if (user) {
                     setUser(user);
@@ -69,7 +65,7 @@ export default function UserProfilePage() {
             const newAppt = await createAppointment({
                 title: "Массаж",
                 description: "Оздоровительный массаж для спины",
-                image_url: "https://example.com/image.png",
+                image_url: "https://placehold.co/600x400",
                 price: "1500",
             });
             if (newAppt) {

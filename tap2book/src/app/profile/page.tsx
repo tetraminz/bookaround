@@ -2,12 +2,11 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import {Button} from "@telegram-apps/telegram-ui";
 
 // TODO профиль не найден
 export default function Page() {
     const router = useRouter();
-
-    console.log(decodeURIComponent(`profile%2FAgeroFlynn`));
 
     useEffect(() => {
         router.replace('/');

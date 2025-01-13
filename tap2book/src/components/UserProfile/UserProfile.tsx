@@ -1,7 +1,6 @@
 'use client';
 
-import { FC } from 'react';
-import { Avatar, Title } from '@telegram-apps/telegram-ui';
+import {Avatar, Button, Title} from '@telegram-apps/telegram-ui';
 import {booking} from "@/core/backend/client";
 
 interface UserProfileProps {
@@ -18,9 +17,9 @@ export function UserProfile({ user, isOwnProfile }: UserProfileProps) {
                 {user.first_name} {user.last_name}
             </Title>
             {isOwnProfile && (
-                <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                <Button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
                     Редактировать профиль
-                </button>
+                </Button>
             )}
         </div>
     );
