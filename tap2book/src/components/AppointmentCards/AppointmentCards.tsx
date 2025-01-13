@@ -28,24 +28,73 @@ export function AppointmentCards({
     return (
         <Carousel className="w-full relative">
             <Section
-                // Вместо простого текста, передаем в `header` JSX с кнопкой
                 header={
-                    <div className="flex items-center justify-center w-full pt-5">
-                    <span className="font-bold text-lg text-[var(--tg-theme-text-color)]">
-                      Услуги
-                    </span>
-                        {isOwnProfile && (
-                            <Button
-                                onClick={onAddCard}
-                                className="flex items-center gap-1 px-3 py-2 rounded-md"
-                                style={{
-                                    backgroundColor: "var(--tg-theme-bg-color)",
-                                    color: "var(--tg-theme-button-text-color)",
-                                }}
-                            >
-                                <CirclePlus className="w-5.5 h-5.5" />
-                            </Button>
-                        )}
+                    // Важно: позиционируем родительский контейнер как relative
+                    <div className="relative flex items-center justify-center w-full pt-5">
+                        {/* Кнопка «Назад» (слева) */}
+                        <CarouselPrevious
+                            className="
+                              w-5.5
+                              h-5.5
+                              absolute
+                              left-4
+                              top-1/2
+                              -translate-y-1/2
+                              z-20
+                              bg-[var(--tg-theme-bg-color)]
+                              rounded-full
+                              shadow-md
+                              p-2
+                              hover:scale-105
+                              transition
+                              hover:bg-[var(--tg-theme-secondary-bg-color)]
+                              hover:text-[var(--tg-theme-button-text-color)]
+                              active:bg-[var(--tg-theme-secondary-bg-color)]
+                            "
+                        />
+
+                        {/* Центральная часть: заголовок + кнопка «Добавить» (если isOwnProfile === true) */}
+                        <div className="flex items-center gap-2 top-1/2 -translate-y-1/4">
+
+                            <span className="font-bold text-lg text-[var(--tg-theme-text-color)]">
+                              Услуги
+                            </span>
+
+                                {isOwnProfile && (
+                                    <Button
+                                        onClick={onAddCard}
+                                        className="flex items-center gap-1 rounded-md"
+                                        style={{
+                                            backgroundColor: 'var(--tg-theme-bg-color)',
+                                            color: 'var(--tg-theme-button-text-color)',
+                                        }}
+                                    >
+                                        <CirclePlus height={38} width={38} strokeWidth={0.5}/>
+                                    </Button>
+                                )}
+                        </div>
+
+                        {/* Кнопка «Вперёд» (справа) */}
+                        <CarouselNext
+                            className="
+                              w-5.5
+                              h-5.5
+                              absolute
+                              right-4
+                              top-1/2
+                              -translate-y-1/2
+                              z-20
+                              bg-[var(--tg-theme-bg-color)]
+                              rounded-full
+                              shadow-md
+                              p-2
+                              hover:scale-105
+                              transition
+                              hover:bg-[var(--tg-theme-secondary-bg-color)]
+                              hover:text-[var(--tg-theme-button-text-color)]
+                              active:bg-[var(--tg-theme-secondary-bg-color)]
+                            "
+                        />
                     </div>
                 }
             >
@@ -83,7 +132,9 @@ export function AppointmentCards({
                                         <h3 className="text-lg font-bold text-[var(--tg-theme-text-color)]">
                                             {appointment.title}
                                         </h3>
-                                        <p className="text-[var(--tg-theme-hint-color)] mt-2">
+                                        <p className="text-[var(--tg-theme-hint-color)] mt-2 text-left"
+                                           style={{ whiteSpace: "pre-wrap" }}
+                                        >
                                             {appointment.description}
                                         </p>
                                         <p className="text-[var(--tg-theme-text-color)] font-bold mt-2">
@@ -97,45 +148,6 @@ export function AppointmentCards({
                 </CarouselContent>
             </Section>
 
-            {/* Навигационные кнопки (слева/справа) */}
-            <CarouselPrevious
-                className="
-          absolute
-          left-4
-          top-1/2
-          transform
-          -translate-y-1/2
-          z-20
-          bg-[var(--tg-theme-bg-color)]
-          rounded-full
-          shadow-md
-          p-2
-          hover:scale-105
-          transition
-          hover:bg-[var(--tg-theme-secondary-bg-color)]
-          hover:text-[var(--tg-theme-button-text-color)]
-          active:bg-[var(--tg-theme-secondary-bg-color)]
-        "
-            />
-            <CarouselNext
-                className="
-          absolute
-          right-4
-          top-1/2
-          transform
-          -translate-y-1/2
-          z-20
-          bg-[var(--tg-theme-bg-color)]
-          rounded-full
-          shadow-md
-          p-2
-          hover:scale-105
-          transition
-          hover:bg-[var(--tg-theme-secondary-bg-color)]
-          hover:text-[var(--tg-theme-button-text-color)]
-          active:bg-[var(--tg-theme-secondary-bg-color)]
-        "
-            />
         </Carousel>
     );
 }
