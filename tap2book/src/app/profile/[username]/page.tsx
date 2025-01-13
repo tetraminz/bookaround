@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 import { booking } from "@/core/backend/client";
 import { useUserService } from "@/hooks/useUserService";
 import { useAppointmentService } from "@/hooks/useAppointmentService";
+import {EditAppointmentModal} from "@/components/EditAppointmentModal/EditAppointmentModal";
 
 export default function UserProfilePage() {
     const params = useParams();
@@ -31,6 +32,10 @@ export default function UserProfilePage() {
     const [userByPathParam, setUser] = useState<booking.User>();
     const [userAppointments, setAppointments] = useState<booking.Appointment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Состояния для модального окна
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<booking.Appointment>();
 
     useEffect(() => {
         async function fetchUserData() {
@@ -60,25 +65,73 @@ export default function UserProfilePage() {
 
 
     async function handleCreateAppointment() {
-        console.log('i am here');
-        try {
-            const newAppt = await createAppointment({
-                title: "Массаж",
-                description: "Оздоровительный массаж для спины",
-                image_url: "https://placehold.co/600x400",
-                price: "1500",
-            });
-            if (newAppt) {
-                setAppointments((prev) => [...prev, newAppt]);
-            }
-        } catch (error) {
-            console.error("[API] Ошибка при создании Appointment:", error);
-        }
+        setSelectedAppointment(undefined); // Сбрасываем выбранный appointment
+        setIsModalOpen(true);
+
+        // console.log('i am here');
+        // try {
+        //     const newAppt = await createAppointment({
+        //         title: "Массаж",
+        //         description: "Оздоровительный массаж для спины",
+        //         image_url: "https://placehold.co/600x400",
+        //         price: "1500",
+        //     });
+        //     if (newAppt) {
+        //         setAppointments((prev) => [...prev, newAppt]);
+        //     }
+        // } catch (error) {
+        //     console.error("[API] Ошибка при создании Appointment:", error);
+        // }
     }
 
     async function handleEditAppointment(id: number) {
-        console.log(`edit appointment ${id}`);
+        try {
+            const appointment = await getAppointment(id);
+            if (appointment) {
+                setSelectedAppointment(appointment);
+                setIsModalOpen(true);
+            }
+        } catch (error) {
+            console.error("[API] Ошибка при получении данных услуги:", error);
+        }
     }
+
+    const handleSaveAppointment = async (data: booking.Appointment) => {
+        try {
+            if (selectedAppointment) {
+                // Обновление существующей услуги
+                await updateAppointment(selectedAppointment.id, {
+                    title: data.title,
+                    description: data.description,
+                    image_url: data.image_url,
+                    price: data.price,
+                    telegram_id: userByInitData?.id || 0,
+                });
+
+                // Обновляем список услуг
+                const updatedAppointments = userAppointments.map(app =>
+                    app.id === selectedAppointment.id ? { ...app, ...data } : app
+                );
+                setAppointments(updatedAppointments);
+            } else {
+                // Создание новой услуги
+                const newAppointment = await createAppointment({
+                    title: data.title,
+                    description: data.description,
+                    image_url: data.image_url,
+                    price: data.price,
+                });
+
+                if (newAppointment) {
+                    setAppointments(prev => [...prev, newAppointment]);
+                }
+            }
+
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error("[API] Ошибка при сохранении услуги:", error);
+        }
+    };
 
     const isOwnProfile = userByInitData?.username === username;
 
@@ -106,6 +159,13 @@ export default function UserProfilePage() {
                     onAddCard={handleCreateAppointment}
                 />
             </div>
+
+            <EditAppointmentModal
+                isOpen={isModalOpen}
+                appointment={selectedAppointment}
+                onSave={handleSaveAppointment}
+                onClose={() => setIsModalOpen(false)}
+            />
 
             <div>
                 <ShareProfile username={username} />

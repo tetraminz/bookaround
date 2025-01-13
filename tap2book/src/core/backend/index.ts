@@ -2,7 +2,7 @@
 
 import Client, {BaseURL, Environment} from './client';
 
-export const ProxyLocal: BaseURL = "https://qualified-understanding-epinions-touched.trycloudflare.com";
+export const ProxyLocal: BaseURL = "https://dad-resort-kill-conspiracy.trycloudflare.com";
 
 export function createClient(initDataRaw: string) {
     let baseClient = process.env.NODE_ENV === "production"
