@@ -1,9 +1,8 @@
 'use client';
 
 import Client, {BaseURL, Environment} from './client';
-import {base} from "next/dist/build/webpack/config/blocks/base";
 
-export const ProxyLocal: BaseURL = "https://da4d-103-156-226-16.ngrok-free.app";
+export const ProxyLocal: BaseURL = "https://adopted-platinum-civilian-bt.trycloudflare.com";
 
 export function createClient(initDataRaw: string) {
     let baseClient = process.env.NODE_ENV === "production"
@@ -11,7 +10,7 @@ export function createClient(initDataRaw: string) {
         : ProxyLocal;
 
     try {
-        const client = new Client(baseClient, {
+        return new Client(baseClient, {
             auth: () => ({
                 Authorization: `tma ${initDataRaw}`
             }),
@@ -21,7 +20,6 @@ export function createClient(initDataRaw: string) {
                 }
             }
         });
-        return client;
     } catch (error) {
         console.error("client creation error", error);
         throw error;

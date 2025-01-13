@@ -78,6 +78,7 @@ function RootInner({ children }: PropsWithChildren) {
     initDataUser && setLocale(initDataUser.languageCode);
   }, [initDataUser]);
 
+  // TODO при переходе на ссылку профиля - грузит сначала другие компоненты.
   useTelegramRedirect();
 
   return (

@@ -1,23 +1,93 @@
 "use client";
 
-import { useSignal, initData } from '@telegram-apps/sdk-react';
-import { Page } from '@/components/Page';
-import { ShareProfile } from '@/components/ShareProfile/ShareProfile';
+import { useSignal, initData } from "@telegram-apps/sdk-react";
+import { Page } from "@/components/Page";
+import { ShareProfile } from "@/components/ShareProfile/ShareProfile";
 import { AppointmentCards } from "@/components/AppointmentCards/AppointmentCards";
 import UserProfile from "@/components/UserProfile/UserProfile";
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "next/navigation";
+import { booking } from "@/core/backend/client";
+import { useUserService } from "@/hooks/useUserService";
+import { useAppointmentService } from "@/hooks/useAppointmentService";
 
 export default function UserProfilePage() {
-    const user = useSignal(initData.user);
+    const params = useParams();
+    const username = params.username as string;
 
-    // В будущем здесь будет запрос к API для получения данных о услугах пользователя
-    const mockServiceData = {
-        title: "Маникюр",
-        description: "Профессиональный маникюр с использованием качественных материалов",
-        price: "от 2000 ₽",
-        image: "https://placehold.co/600x400"
-    };
+    const { getUserByUsername} = useUserService();
+    const {
+        updateAppointment,
+        getAppointment,
+        createAppointment,
+        deleteAppointment,
+        listAppointments,
+        listAppointmentsByUser,
+    } = useAppointmentService();
 
-    if (!user) {
+    const userByInitData = useSignal(initData.user);
+
+    // Состояния
+    const [userByPathParam, setUser] = useState<booking.User>();
+    const [userAppointments, setAppointments] = useState<booking.Appointment[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchUserData() {
+            setIsLoading(true);
+
+            console.log("[API] Запрос данных для пользователя:", username);
+
+            try {
+                const user = await getUserByUsername(username);
+                console.log("[API] Полученные данные пользователя:", user);
+
+                const appointments = await listAppointmentsByUser(username);
+                console.log("[API] Полученные аппойнтменты:", appointments);
+
+                if (user) {
+                    setUser(user);
+                }
+
+                if (appointments) {
+                    setAppointments(appointments);
+                }
+            } catch (error) {
+                console.error("[API] Ошибка загрузки данных:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchUserData();
+    }, [username, getUserByUsername, listAppointmentsByUser]);
+
+
+    async function handleCreateAppointment() {
+        console.log('i am here');
+        try {
+            const newAppt = await createAppointment({
+                title: "Массаж",
+                description: "Оздоровительный массаж для спины",
+                image_url: "https://example.com/image.png",
+                price: "1500",
+            });
+            if (newAppt) {
+                setAppointments((prev) => [...prev, newAppt]);
+            }
+        } catch (error) {
+            console.error("[API] Ошибка при создании Appointment:", error);
+        }
+    }
+
+    async function handleEditAppointment(id: number) {
+        console.log(`edit appointment ${id}`);
+    }
+
+    const isOwnProfile = userByInitData?.username === username;
+
+    // TODO loading component
+    if (isLoading || !userByPathParam) {
         return (
             <Page>
                 <div className="flex items-center justify-center min-h-screen">
@@ -27,25 +97,22 @@ export default function UserProfilePage() {
         );
     }
 
+
     return (
-        <Page>
-            <UserProfile
-                firstName={user.firstName}
-                lastName={user.lastName}
-                photoUrl={user.photoUrl}
-            />
+        <Page >
+            <UserProfile user={userByPathParam} isOwnProfile={isOwnProfile} />
 
             <div className="flex flex-col min-h-screen bg-[var(--tg-theme-bg-color)] text-center items-center">
                 <AppointmentCards
-                    title={mockServiceData.title}
-                    description={mockServiceData.description}
-                    price={mockServiceData.price}
-                    image={mockServiceData.image}
+                    appointments={userAppointments}
+                    isOwnProfile={isOwnProfile}
+                    onEditCard={handleEditAppointment}
+                    onAddCard={handleCreateAppointment}
                 />
             </div>
 
             <div>
-                <ShareProfile username={user.username} />
+                <ShareProfile username={username} />
             </div>
         </Page>
     );
