@@ -11,20 +11,21 @@ import {
 import { X } from "lucide-react";
 import {Icon24Close} from "@telegram-apps/telegram-ui/dist/icons/24/close";
 
-// Типы из твоего кода
-interface AppointmentData {
-    id?: number;
+export interface AppointmentData {
+    id?: number;             // В booking.Appointment: id: number
     title: string;
     description: string;
     image_url: string;
     price: string;
-    telegram_id?: number;
+    telegram_id?: number;    // В booking.Appointment: telegram_id: number
+    created_at?: string;     // В booking.Appointment: string
+    updated_at?: string;     // В booking.Appointment: string
 }
 
 interface EditAppointmentModalProps {
     isOpen: boolean;
     appointment?: AppointmentData;
-    onSave: (data: AppointmentData) => void;
+    onSave: (data: AppointmentData) => Promise<void>;
     onClose: () => void;
 }
 
@@ -180,17 +181,18 @@ export function EditAppointmentModal({
                             status='default'
                             value={formData.description}
                             onChange={(e) => handleChange("description", e.target.value)}
-                            after={
-                                formData.description ? (
-                                    <Tappable
-                                        Component="div"
-                                        style={{ display: "flex" }}
-                                        onClick={() => handleChange("description", "")}
-                                    >
-                                        <Icon24Close />
-                                    </Tappable>
-                                ) : undefined
-                            }
+                            //TODO что тут с after???
+                            // after={
+                            //     formData.description ? (
+                            //         <Tappable
+                            //             Component="div"
+                            //             style={{ display: "flex" }}
+                            //             onClick={() => handleChange("description", "")}
+                            //         >
+                            //             <Icon24Close />
+                            //         </Tappable>
+                            //     ) : undefined
+                            // }
                         />
                         {errors.description && (
                             <ul className="mt-1 text-sm text-[var(--tg-theme-destructive-text-color)] list-disc list-inside">

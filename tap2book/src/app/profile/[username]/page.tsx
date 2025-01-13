@@ -10,7 +10,7 @@ import { useParams } from "next/navigation";
 import { booking } from "@/core/backend/client";
 import { useUserService } from "@/hooks/useUserService";
 import { useAppointmentService } from "@/hooks/useAppointmentService";
-import {EditAppointmentModal} from "@/components/EditAppointmentModal/EditAppointmentModal";
+import {EditAppointmentModal, AppointmentData} from "@/components/EditAppointmentModal/EditAppointmentModal";
 
 export default function UserProfilePage() {
     const params = useParams();
@@ -96,32 +96,32 @@ export default function UserProfilePage() {
         }
     }
 
-    const handleSaveAppointment = async (data: booking.Appointment) => {
+    const handleSaveAppointment = async (data: AppointmentData): Promise<void> => {
         try {
             if (selectedAppointment) {
-                // Обновление существующей услуги
+                // update
                 await updateAppointment(selectedAppointment.id, {
                     title: data.title,
                     description: data.description,
                     image_url: data.image_url,
                     price: data.price,
-                    telegram_id: userByInitData?.id || 0,
+                    //TODO нахуя тут телеграм id?
+                    telegram_id: data.telegram_id ?? userByInitData?.id ?? 0,
                 });
 
-                // Обновляем список услуг
+                // локально обновляем
                 const updatedAppointments = userAppointments.map(app =>
                     app.id === selectedAppointment.id ? { ...app, ...data } : app
                 );
                 setAppointments(updatedAppointments);
             } else {
-                // Создание новой услуги
+                // create
                 const newAppointment = await createAppointment({
                     title: data.title,
                     description: data.description,
                     image_url: data.image_url,
                     price: data.price,
                 });
-
                 if (newAppointment) {
                     setAppointments(prev => [...prev, newAppointment]);
                 }
