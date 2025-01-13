@@ -14,6 +14,8 @@ export function useAppointmentService() {
     /**
      * Создать новый аппойнтмент
      */
+
+
     const createAppointment = useCallback(
         async (params: booking.CreateAppointmentParams): Promise<booking.Appointment | undefined> => {
             if (!client || !isInitialized) return;
