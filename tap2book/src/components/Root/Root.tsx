@@ -18,6 +18,7 @@ import { useClientOnce } from '@/hooks/useClientOnce';
 import { setLocale } from '@/core/i18n/locale';
 import { init } from '@/core/init';
 import {createClient} from "@/core/backend";
+import useTelegramRedirect from "@/core/startParamRedirect";
 
 function RootInner({ children }: PropsWithChildren) {
   useEffect(() => {
@@ -76,6 +77,9 @@ function RootInner({ children }: PropsWithChildren) {
   useEffect(() => {
     initDataUser && setLocale(initDataUser.languageCode);
   }, [initDataUser]);
+
+  // TODO при переходе на ссылку профиля - грузит сначала другие компоненты.
+  useTelegramRedirect();
 
   return (
     <TonConnectUIProvider manifestUrl="/tonconnect-manifest.json">

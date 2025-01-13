@@ -70,6 +70,17 @@ export interface ClientOptions {
 }
 
 export namespace booking {
+    export interface Appointment {
+        id: number
+        title: string
+        description: string
+        "image_url": string
+        price: string
+        "telegram_id": number
+        "created_at": string
+        "updated_at": string
+    }
+
     export interface AuthParams {
         Authorization: string
     }
@@ -82,6 +93,7 @@ export namespace booking {
     export interface BookParams {
         start: string
         Email: string
+        AppointmentID: number
     }
 
     export interface BookableSlot {
@@ -94,10 +106,24 @@ export namespace booking {
         start: string
         end: string
         Email: string
+        CustomerTelegramID: number
+        MasterTelegramID: number
+        AppointmentID: number
+    }
+
+    export interface CreateAppointmentParams {
+        title: string
+        description: string
+        "image_url": string
+        price: string
     }
 
     export interface GetAvailabilityResponse {
         Availability: Availability[]
+    }
+
+    export interface ListAppointmentsResponse {
+        appointments: Appointment[]
     }
 
     export interface ListBookingsResponse {
@@ -112,6 +138,22 @@ export namespace booking {
         Slots: BookableSlot[]
     }
 
+    export interface UpdateAppointmentParams {
+        title: string
+        description: string
+        "image_url": string
+        price: string
+        "telegram_id": number
+    }
+
+    export interface User {
+        "telegram_id": number
+        "first_name": string
+        "last_name": string
+        "photo_url": string
+        "language_code": string
+    }
+
     export class ServiceClient {
         private baseClient: BaseClient
 
@@ -119,24 +161,58 @@ export namespace booking {
             this.baseClient = baseClient
         }
 
-        public async Book(params: BookParams): Promise<void> {
-            await this.baseClient.callAPI("POST", `/booking`, JSON.stringify(params))
+        public async Book(masterTelegramID: number, params: BookParams): Promise<void> {
+            await this.baseClient.callAPI("POST", `/booking/${encodeURIComponent(masterTelegramID)}`, JSON.stringify(params))
+        }
+
+        public async CreateAppointment(params: CreateAppointmentParams): Promise<Appointment> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callAPI("POST", `/appointment`, JSON.stringify(params))
+            return await resp.json() as Appointment
+        }
+
+        public async DeleteAppointment(id: number): Promise<void> {
+            await this.baseClient.callAPI("DELETE", `/appointment/${encodeURIComponent(id)}`)
         }
 
         public async DeleteBooking(id: number): Promise<void> {
             await this.baseClient.callAPI("DELETE", `/booking/${encodeURIComponent(id)}`)
         }
 
-        public async GetAvailability(): Promise<GetAvailabilityResponse> {
+        public async GetAppointment(id: number): Promise<Appointment> {
             // Now make the actual call to the API
-            const resp = await this.baseClient.callAPI("GET", `/availability`)
+            const resp = await this.baseClient.callAPI("GET", `/appointment/${encodeURIComponent(id)}`)
+            return await resp.json() as Appointment
+        }
+
+        public async GetAvailability(masterTelegramID: number): Promise<GetAvailabilityResponse> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callAPI("GET", `/availability/${encodeURIComponent(masterTelegramID)}`)
             return await resp.json() as GetAvailabilityResponse
         }
 
-        public async GetBookableSlots(_from: string): Promise<SlotsResponse> {
+        public async GetBookableSlots(masterTelegramID: number, _from: string): Promise<SlotsResponse> {
             // Now make the actual call to the API
-            const resp = await this.baseClient.callAPI("GET", `/slots/${encodeURIComponent(_from)}`)
+            const resp = await this.baseClient.callAPI("GET", `/slots/${encodeURIComponent(masterTelegramID)}/${encodeURIComponent(_from)}`)
             return await resp.json() as SlotsResponse
+        }
+
+        public async GetUserByUsename(userName: string): Promise<User> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callAPI("GET", `/tma/${encodeURIComponent(userName)}`)
+            return await resp.json() as User
+        }
+
+        public async ListAppointments(): Promise<ListAppointmentsResponse> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callAPI("GET", `/appointments`)
+            return await resp.json() as ListAppointmentsResponse
+        }
+
+        public async ListAppointmentsByUser(userName: string): Promise<ListAppointmentsResponse> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callAPI("GET", `/appointments/user/${encodeURIComponent(userName)}`)
+            return await resp.json() as ListAppointmentsResponse
         }
 
         /**
@@ -151,6 +227,10 @@ export namespace booking {
 
         public async SetAvailability(params: SetAvailabilityParams): Promise<void> {
             await this.baseClient.callAPI("POST", `/availability`, JSON.stringify(params))
+        }
+
+        public async UpdateAppointment(id: number, params: UpdateAppointmentParams): Promise<void> {
+            await this.baseClient.callAPI("PUT", `/appointment/${encodeURIComponent(id)}`, JSON.stringify(params))
         }
 
         public async UserUpsert(): Promise<void> {

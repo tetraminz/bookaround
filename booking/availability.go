@@ -3,6 +3,7 @@ package booking
 import (
 	"context"
 	"encore.app/booking/db"
+	"encore.dev/beta/auth"
 	"encore.dev/beta/errs"
 	"encore.dev/rlog"
 	"errors"
@@ -17,9 +18,9 @@ type GetAvailabilityResponse struct {
 	Availability []Availability
 }
 
-//encore:api public method=GET path=/availability
-func GetAvailability(ctx context.Context) (*GetAvailabilityResponse, error) {
-	rows, err := query.GetAvailability(ctx)
+//encore:api public method=GET path=/availability/:masterTelegramID
+func GetAvailability(ctx context.Context, masterTelegramID int64) (*GetAvailabilityResponse, error) {
+	rows, err := query.GetAvailabilityByUser(ctx, masterTelegramID)
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +52,12 @@ type SetAvailabilityParams struct {
 //encore:api auth method=POST path=/availability
 func SetAvailability(ctx context.Context, params SetAvailabilityParams) error {
 	eb := errs.B()
+
+	authData, ok := auth.Data().(*AuthData)
+	if !ok {
+		return eb.Code(errs.Unavailable).Msg("failed to fetch authData").Err()
+	}
+
 	tx, err := pgxdb.Begin(ctx)
 	if err != nil {
 		return err
@@ -73,10 +80,11 @@ func SetAvailability(ctx context.Context, params SetAvailabilityParams) error {
 			return eb.Code(errs.InvalidArgument).Msg("start must be before end").Err()
 		}
 
-		err = qry.UpdateAvailability(ctx, db.UpdateAvailabilityParams{
-			Weekday:   int16(weekday),
-			StartTime: start,
-			EndTime:   end,
+		err = qry.UpsertAvailability(ctx, db.UpsertAvailabilityParams{
+			Weekday:    int16(weekday),
+			StartTime:  start,
+			EndTime:    end,
+			TelegramID: authData.TelegramID,
 		})
 		if err != nil {
 			return eb.Cause(err).Code(errs.Unavailable).Msg("failed to update availability").Err()

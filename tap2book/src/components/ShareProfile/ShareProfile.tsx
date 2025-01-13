@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Card, Button } from '@telegram-apps/telegram-ui';
 import { Check, Copy } from 'lucide-react';
+import {encodeStartParam} from "@/core/startParamRedirect";
 
 interface ShareProfileProps {
     username: string;
@@ -10,12 +11,13 @@ interface ShareProfileProps {
 
 export function ShareProfile({ username }: ShareProfileProps) {
     const [copied, setCopied] = useState(false);
-    //TODO ENV
-    const botUrl = process.env.NEXT_PUBLIC_BOT_USERNAME + '/' + username;
+    const botUrl = process.env.NEXT_PUBLIC_BOT_USERNAME;
+    const shortURL = `${botUrl}/${username}`;
 
     const copyToClipboard = async () => {
         try {
-            await navigator.clipboard.writeText(`https://t.me/${botUrl}/app?startapp=${username}`);
+            let startappParam = encodeStartParam(username);
+            await navigator.clipboard.writeText(`https://t.me/${botUrl}?startapp=${startappParam}`);
             setCopied(true);
         } catch (err) {
             console.error('Failed to copy:', err);
@@ -30,7 +32,7 @@ export function ShareProfile({ username }: ShareProfileProps) {
                         Ссылка на профиль
                     </p>
                     <p className="text-[var(--tg-theme-text-color)] truncate">
-                        {botUrl}
+                        {shortURL}
                     </p>
                 </div>
                 <Button
